@@ -2,6 +2,7 @@ import { getProductById } from "@/services/server-action";
 import ProductDetail from "@/components/_/ProductDetail";
 
 import { notFound } from "next/navigation";
+import { getIsLogin } from "@/utils/supabase/server";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const id = parseInt(params.id, 10);
@@ -23,12 +24,11 @@ const ProductDetailPage = async ({
   searchParams: { page: string; color: string; size: string };
 }) => {
   const id = parseInt(params.id, 10);
-
   const { data: product } = await getProductById(id);
-
+  const isLogin = await getIsLogin();
   if (!product) notFound();
 
-  return <ProductDetail product={product} />;
+  return <ProductDetail product={product} isLogin={isLogin} />;
 };
 
 export default ProductDetailPage;

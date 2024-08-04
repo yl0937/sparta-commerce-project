@@ -4,12 +4,13 @@ import Link from "next/link";
 import Logo from "/public/assets/logo.png";
 import { getCategories } from "@/services/server-action";
 import { CartButton } from "./_/CartButton";
-import { context } from "@/lib/context";
+
 import { SignOutButton } from "./_/SignOutButton";
+import { createClient, getIsLogin } from "@/utils/supabase/server";
 
 export const Header = async () => {
   const { data: categories } = await getCategories();
-  const { isLogin } = context();
+  const isLogin = await getIsLogin();
 
   return (
     <header className="relative m-auto max-w-screen-lg flex h-[60px] justify-between items-center">

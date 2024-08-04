@@ -1,20 +1,17 @@
 "use server";
 
-import { CartProduct, Product } from "@/type/product";
-import { BASE_URL } from "@/constants/api";
+import { camelizeProduct, Product, SupabseProduct } from "@/type/product";
 import { SearchQueryParams } from "@/type/search";
+import { createClient } from "@/utils/supabase/server";
 
 export async function getProducts({
   search = "",
   category = "ALL",
 }: Partial<SearchQueryParams>) {
   let result: Product[];
-
-  const res = await fetch(`${BASE_URL}/products`, {
-    cache: "no-store",
-  });
-  const data: Product[] = await res.json();
-  result = data;
+  const serverClient = createClient();
+  const { data } = await serverClient.from("products").select();
+  result = data!.map((product) => camelizeProduct(product as SupabseProduct));
 
   if (search) {
     result = result.filter((product) =>
@@ -30,37 +27,42 @@ export async function getProducts({
 }
 
 export async function getNewProducts() {
-  const res = await fetch(`${BASE_URL}/products`, {
-    cache: "no-store",
-    next: {
-      tags: ["new"],
-    },
-  });
-  const data: Product[] = await res.json();
+  const serverClient = createClient();
+  const { data } = await serverClient
+    .from("products")
+    .select()
+    .eq("is_new", true);
+
+  const result = data!.map((product) =>
+    camelizeProduct(product as SupabseProduct)
+  );
+
   return {
-    data: data.filter((product) => product.isNew),
+    data: result,
   };
 }
 
 export async function getProductById(id: number) {
-  const res = await fetch(`${BASE_URL}/products/${id}`, {
-    cache: "no-store",
-  });
-  const data: Product = await res.json();
-  return { data };
+  const serverClient = createClient();
+  const { data } = await serverClient
+    .from("products")
+    .select()
+    .eq("id", id)
+    .single();
+
+  return { data: camelizeProduct(data as SupabseProduct) };
 }
 
 export async function getCategories() {
-  const res = await fetch(`${BASE_URL}/products`, {
-    cache: "no-store",
-    next: {
-      tags: ["category"],
-    },
-  });
+  const serverClient = createClient();
+  const { data } = await serverClient.from("products").select();
 
-  const data: Product[] = await res.json();
+  const result = data!.map((product) =>
+    camelizeProduct(product as SupabseProduct)
+  );
+
   const categories = new Set<string>([]);
-  data.forEach((product) => {
+  result.forEach((product) => {
     product.tags.forEach((tag) => {
       categories.add(tag);
     });
@@ -71,12 +73,4 @@ export async function getCategories() {
       name: category,
     })),
   };
-}
-
-export async function getCartProducts() {
-  const res = await fetch(`${BASE_URL}/carts`, {
-    cache: "no-store",
-  });
-  const data: CartProduct[] = await res.json();
-  return { data };
 }

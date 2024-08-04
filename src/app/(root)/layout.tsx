@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 
 import { Header } from "@/components/Header";
 import { CartProvider } from "@/components/providers/ZustandProvider";
-import { getCartProducts } from "@/services/server-action";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +18,8 @@ export default async function RootLayout({
   children: React.ReactNode;
   modal?: React.ReactNode;
 }>) {
-  const { data } = await getCartProducts();
   return (
-    <CartProvider products={data}>
+    <CartProvider>
       <Header />
       {children}
       {modal}

@@ -1,11 +1,9 @@
 export type Product = {
   id: number;
-  handle: string;
   availableForSale: boolean;
   isNew: boolean;
   title: string;
   description: string;
-  descriptionHtml: string;
   options: {
     name: string;
     values: string[];
@@ -28,4 +26,43 @@ export type CartProduct = {
   product: Product;
   quantity: number;
   option: string;
+};
+
+export type SupabseProduct = {
+  id: number;
+  is_new: boolean;
+  price_amount: number;
+  seo_title: string;
+  seo_description: string;
+  title: string;
+  description: string;
+  image_url?: string;
+  rating: number;
+};
+
+export const camelizeProduct = (data: SupabseProduct): Product => {
+  return {
+    id: data.id,
+    isNew: data.is_new,
+    price: {
+      amount: data.price_amount.toString(),
+      currencyCode: "KRW",
+    },
+    seo: {
+      title: data.seo_title,
+      description: data.seo_description,
+    },
+    title: data.title,
+    images: data.image_url ?? "",
+    description: data.description,
+    tags: [data.title],
+    availableForSale: true,
+    rating: data.rating,
+    options: [
+      {
+        name: "Size",
+        values: ["S", "M"],
+      },
+    ],
+  };
 };

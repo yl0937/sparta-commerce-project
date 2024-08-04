@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { context } from "./lib/context";
+
+import { updateSession } from "./utils/supabase/middleware";
+import { createClient, getIsLogin } from "./utils/supabase/server";
 
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.includes("/cart")) {
-    const { isLogin } = context();
+    const isLogin = await getIsLogin();
+
     if (!isLogin) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
   }
 
-  return NextResponse.next();
+  await updateSession(request);
 }
 
 export const config = {

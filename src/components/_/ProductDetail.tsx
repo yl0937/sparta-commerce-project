@@ -30,6 +30,7 @@ const ProductDetail = ({ product, isLogin = false }: Props) => {
 
     if (count > 1 && selectedOption) {
       addProductToCart({
+        id: crypto.randomUUID(),
         product: product,
         option: selectedOption,
         quantity: count,

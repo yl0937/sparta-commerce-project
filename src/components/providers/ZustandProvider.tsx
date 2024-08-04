@@ -18,7 +18,7 @@ export function useCartContext<T>(selector: (state: CartState) => T): T {
 
 export const CartContext = createContext<CartStore | null>(null);
 
-type CartProviderProps = React.PropsWithChildren<CartProps>;
+type CartProviderProps = React.PropsWithChildren;
 export function CartProvider({ children, ...props }: CartProviderProps) {
   const storeRef = useRef<CartStore>();
   if (!storeRef.current) {

@@ -1,21 +1,16 @@
 import { Card, CardHeader } from "@/components/ui/card";
-import { Product } from "@/type/product";
 
 import Image from "next/image";
 import Link from "next/link";
 import RatingStar from "./RatingStar";
-import { BASE_URL } from "@/constants/api";
+import { getNewProducts } from "@/services/server-action";
 
 const NewProductList = async () => {
-  const res = await fetch(`${BASE_URL}/products`, {
-    cache: "no-store",
-  });
-  const data: Product[] = await res.json();
-  const newData = data.filter((p) => p.isNew);
+  const { data } = await getNewProducts();
 
   return (
     <>
-      {newData.map((product) => (
+      {data.map((product) => (
         <Card
           className="w-[240px] h-[440px] overflow-clip  border gap-4 rounded-md"
           key={product.id}
